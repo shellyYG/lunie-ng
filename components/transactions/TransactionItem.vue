@@ -16,7 +16,7 @@
                 v-for="(address, index) in transaction.details.to"
                 :key="address + index"
               >
-                {{ address }}
+                to: {{ address }}
               </p>
             </template>
             <template v-if="transactionCaption === `SendMultiple`">
@@ -30,11 +30,8 @@
               </p>
             </template>
             <template v-if="transactionCaption === `Receive`">
-              <p
-                v-for="(address, index) in transaction.details.from"
-                :key="address + index"
-              >
-                {{ address }}
+              <p>
+                {{ receiveSenderAddress }}
               </p>
             </template>
             <template v-if="transactionCaption === `ISCN`">
@@ -153,6 +150,13 @@ export default {
           }
         default:
           return ``
+      }
+    },
+    receiveSenderAddress() {
+      if (this.transaction.details.to.includes(this.session.address)) {
+        return `from: ${this.transaction.details.from}`
+      } else {
+        return ''
       }
     },
     receiveMultipleSenderAddress() {
