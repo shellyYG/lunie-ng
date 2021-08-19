@@ -259,6 +259,8 @@ export function getMessageType(type) {
   switch (transactionTypeSuffix) {
     case 'cosmos.bank.v1beta1.MsgSend':
       return lunieMessageTypes.SEND
+    case 'cosmos.bank.v1beta1.MsgMultiSend':
+      return lunieMessageTypes.SEND_MULTIPLE
     case 'cosmos.staking.v1beta1.MsgDelegate':
       return lunieMessageTypes.STAKE
     case 'cosmos.staking.v1beta1.MsgBeginRedelegate':

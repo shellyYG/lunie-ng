@@ -19,6 +19,16 @@
                 {{ address }}
               </p>
             </template>
+            <template v-if="transactionCaption === `SendMultiple`">
+              <p>
+                {{ sendMultipleTosCount }}
+              </p>
+            </template>
+            <template v-if="transactionCaption === `ReceiveMultiple`">
+              <p>
+                {{ receiveMultipleSenderAddress }}
+              </p>
+            </template>
             <template v-if="transactionCaption === `Receive`">
               <p
                 v-for="(address, index) in transaction.details.from"
@@ -102,6 +112,16 @@ export default {
           } else {
             return 'Send'
           }
+        case lunieMessageTypes.SEND_MULTIPLE:
+          if (
+            this.transaction.rawMessage.message.outputs.filter(
+              (a) => a.address === this.session.address
+            ).length > 0
+          ) {
+            return 'ReceiveMultiple'
+          } else {
+            return 'SendMultiple'
+          }
         case lunieMessageTypes.STAKE:
           return `Stake`
         case lunieMessageTypes.RESTAKE:
@@ -135,6 +155,25 @@ export default {
           return ``
       }
     },
+    receiveMultipleSenderAddress() {
+      if (
+        this.transaction.rawMessage.message.outputs.filter(
+          (a) => a.address === this.session.address
+        ).length > 0
+      ) {
+        return `from: ${this.transaction.rawMessage.message.inputs[0].address}`
+      } else {
+        return ''
+      }
+    },
+    sendMultipleTosCount() {
+      if (this.transaction.rawMessage.message.outputs) {
+        const receiverCount = this.transaction.rawMessage.message.outputs.length
+        return `to ${receiverCount} addresses`
+      } else {
+        return `to 0 address`
+      }
+    },
     imagePath() {
       try {
         const imgName = this.transactionCaption.replace(/\s+/g, '')
@@ -152,12 +191,45 @@ export default {
       ].includes(this.transaction.type)
     },
     amounts() {
-      if (this.transaction.details.amounts) {
+      if (
+        this.transaction.details.amounts &&
+        this.transaction.type !== lunieMessageTypes.SEND_MULTIPLE) { // eslint-disable-line
         return this.transaction.details.amounts
       } else if (this.transaction.details.amount) {
         return Array.isArray(this.transaction.details.amount)
           ? this.transaction.details.amount
           : [this.transaction.details.amount]
+
+        // sendMultiple:
+      } else if (
+        this.transaction.rawMessage.message.inputs &&
+        this.transaction.rawMessage.message.inputs[0].address === this.session.address // eslint-disable-line
+      ) {
+        const totalAmount = this.transaction.rawMessage.message.inputs[0].coins; // eslint-disable-line
+        const amountInLIKE = []
+        const sendAmount = {}
+        if (totalAmount) {
+          sendAmount.amount = totalAmount[0].amount / 1e9
+          sendAmount.denom = 'LIKE'
+          amountInLIKE.push(sendAmount)
+        }
+        return amountInLIKE
+
+        // receiveMultiple:
+      } else if (this.transaction.rawMessage.message.inputs) {
+        const targetReceiver = this.transaction.rawMessage.message.outputs.find(
+          (o) => o.address === this.session.address
+        )
+        console.log('targetReceiver: ', targetReceiver)
+        const receivedLIKE = targetReceiver.coins[0].amount
+        const amountInLIKE = []
+        const receiveAmount = {}
+        if (receivedLIKE) {
+          receiveAmount.amount = receivedLIKE / 1e9
+          receiveAmount.denom = 'LIKE'
+          amountInLIKE.push(receiveAmount)
+        }
+        return amountInLIKE
       }
       return null
     },
