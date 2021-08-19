@@ -34,7 +34,13 @@
                 {{ receiveSenderAddress }}
               </p>
             </template>
-            <template v-if="transactionCaption === `ISCN`">
+            <template
+              v-if="
+                transactionCaption === `Create ISCN Record` ||
+                transactionCaption === `Update ISCN Record` ||
+                transactionCaption === `Change ISCN Ownership`
+              "
+            >
               <p>
                 {{ iscnId }}
               </p>
@@ -131,8 +137,12 @@ export default {
           return `Vote`
         case lunieMessageTypes.CLAIM_REWARDS:
           return `Claim Rewards`
-        case lunieMessageTypes.ISCN:
-          return `ISCN`
+        case lunieMessageTypes.CREATE_ISCN_RECORD:
+          return `Create ISCN Record`
+        case lunieMessageTypes.UPDATE_ISCN_RECORD:
+          return `Update ISCN Record`
+        case lunieMessageTypes.CHANGE_ISCN_OWNERSHIP:
+          return `Change ISCN Ownership`
         case lunieMessageTypes.UNKNOWN:
           return this.transaction.rawMessage.message['@type'].split('/')[1]
         /* istanbul ignore next */
@@ -141,15 +151,18 @@ export default {
       }
     },
     iscnId() {
-      switch (this.transaction.type) {
-        case lunieMessageTypes.ISCN:
-          if (this.transaction.events[0].attributes[0].key === 'iscn_id') {
-            return `${this.transaction.events[0].attributes[0].value}`
-          } else {
-            return 'can not find ISCN ID'
-          }
-        default:
-          return ``
+      if (
+        this.transaction.type === lunieMessageTypes.CREATE_ISCN_RECORD ||
+        this.transaction.type === lunieMessageTypes.UPDATE_ISCN_RECORD ||
+        this.transaction.type === lunieMessageTypes.CHANGE_ISCN_OWNERSHIP
+      ) {
+        if (this.transaction.events[0].attributes[0].key === 'iscn_id') {
+          return `${this.transaction.events[0].attributes[0].value}`
+        } else {
+          return 'can not find ISCN ID'
+        }
+      } else {
+        return ''
       }
     },
     receiveSenderAddress() {
@@ -180,7 +193,14 @@ export default {
     },
     imagePath() {
       try {
-        const imgName = this.transactionCaption.replace(/\s+/g, '')
+        let imgName = this.transactionCaption.replace(/\s+/g, '')
+        if (
+          imgName === 'CreateISCNRecord' ||
+          imgName === 'UpdateISCNRecord' ||
+          imgName === 'ChangeISCNOwnership'
+        ) {
+          imgName = 'ISCN'
+        }
         return require(`../../assets/images/transactions/${imgName}.svg`)
       } catch {
         return require('../../assets/images/transactions/Unknown.svg')

@@ -8,7 +8,9 @@ const lunieMessageTypes = {
   DEPOSIT: `DepositTx`,
   CLAIM_REWARDS: `ClaimRewardsTx`,
   SUBMIT_PROPOSAL: `SubmitProposalTx`,
-  ISCN: `SendISCNTx`,
+  CREATE_ISCN_RECORD: `CreateISCNRecord`,
+  UPDATE_ISCN_RECORD: `UpdateISCNRecord`,
+  CHANGE_ISCN_OWNERSHIP: `ChangeISCNOwnership`,
   UNKNOWN: `UnknownTx`,
 }
 

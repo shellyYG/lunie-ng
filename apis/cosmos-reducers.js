@@ -276,7 +276,11 @@ export function getMessageType(type) {
     case 'cosmos.gov.v1beta1.MsgDeposit':
       return lunieMessageTypes.DEPOSIT
     case 'likechain.iscn.MsgCreateIscnRecord':
-      return lunieMessageTypes.ISCN
+      return lunieMessageTypes.CREATE_ISCN_RECORD
+    case 'likechain.iscn.MsgUpdateIscnRecord':
+      return lunieMessageTypes.UPDATE_ISCN_RECORD
+    case 'likechain.iscn.MsgChangeIscnRecordOwnership':
+      return lunieMessageTypes.CHANGE_ISCN_OWNERSHIP
     default:
       return lunieMessageTypes.UNKNOWN
   }
