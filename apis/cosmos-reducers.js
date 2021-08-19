@@ -273,6 +273,8 @@ export function getMessageType(type) {
       return lunieMessageTypes.VOTE
     case 'cosmos.gov.v1beta1.MsgDeposit':
       return lunieMessageTypes.DEPOSIT
+    case 'likechain.iscn.MsgCreateIscnRecord':
+      return lunieMessageTypes.ISCN
     default:
       return lunieMessageTypes.UNKNOWN
   }
@@ -573,6 +575,7 @@ export function transactionReducer(transaction) {
           // type,
           message,
         },
+        events: transaction.logs[0].events
       })
     )
     return returnedMessages

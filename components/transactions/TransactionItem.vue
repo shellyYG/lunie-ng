@@ -27,6 +27,11 @@
                 {{ address }}
               </p>
             </template>
+            <template v-if="transactionCaption === `ISCN`">
+              <p>
+                {{ iscnId }}
+              </p>
+            </template>
           </div>
           <div v-if="includesValidatorAddresses" class="validator-images">
             <template v-for="(address, index) in transaction.details.from">
@@ -109,9 +114,23 @@ export default {
           return `Vote`
         case lunieMessageTypes.CLAIM_REWARDS:
           return `Claim Rewards`
+        case lunieMessageTypes.ISCN:
+          return `ISCN`
         case lunieMessageTypes.UNKNOWN:
           return this.transaction.rawMessage.message['@type'].split('/')[1]
         /* istanbul ignore next */
+        default:
+          return ``
+      }
+    },
+    iscnId() {
+      switch (this.transaction.type) {
+        case lunieMessageTypes.ISCN:
+          if (this.transaction.events[0].attributes[0].key === 'iscn_id') {
+            return `${this.transaction.events[0].attributes[0].value}`
+          } else {
+            return 'can not find ISCN ID'
+          }
         default:
           return ``
       }
