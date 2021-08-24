@@ -160,8 +160,8 @@ export default {
         this.transaction.type === lunieMessageTypes.UPDATE_ISCN_RECORD ||
         this.transaction.type === lunieMessageTypes.CHANGE_ISCN_OWNERSHIP
       ) {
-        if (this.transaction.events[0].attributes[0].key === 'iscn_id') {
-          return `${this.transaction.events[0].attributes[0].value}`
+        if (this.transaction.logs[0][0].attributes[0].key === 'iscn_id') {
+          return `${this.transaction.logs[0][0].attributes[0].value}`
         } else {
           return 'Unknown ISCN ID'
         }
