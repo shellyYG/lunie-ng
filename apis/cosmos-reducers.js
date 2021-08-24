@@ -302,6 +302,16 @@ export function sendDetailsReducer(message) {
   }
 }
 
+export function sendMultipleDetailsReducer(message) {
+  return {
+    from: [message.inputs[0].address],
+    to: message.outputs.map((o) => o.address),
+    amounts: message.outputs.map((o) => {
+      return o.coins.map(coinReducer)[0]
+    }),
+  }
+}
+
 export function stakeDetailsReducer(message) {
   return {
     to: [message.validator_address],
@@ -403,6 +413,9 @@ export function transactionDetailsReducer(type, message, transaction) {
   switch (type) {
     case lunieMessageTypes.SEND:
       details = sendDetailsReducer(message)
+      break
+    case lunieMessageTypes.SEND_MULTIPLE:
+      details = sendMultipleDetailsReducer(message)
       break
     case lunieMessageTypes.STAKE:
       details = stakeDetailsReducer(message)

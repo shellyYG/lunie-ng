@@ -89,6 +89,7 @@
 </template>
 
 <script>
+import BigNumber from 'bignumber.js'
 import { mapState } from 'vuex'
 import { lunieMessageTypes } from '~/common/lunie-message-types'
 import { prettyLong } from '~/common/numbers'
@@ -162,7 +163,7 @@ export default {
         if (this.transaction.events[0].attributes[0].key === 'iscn_id') {
           return `${this.transaction.events[0].attributes[0].value}`
         } else {
-          return 'can not find ISCN ID'
+          return 'Unknown ISCN ID'
         }
       } else {
         return ''
@@ -222,33 +223,29 @@ export default {
 
         // sendMultiple:
       } else if (
-        this.transaction.rawMessage.message.inputs &&
-        this.transaction.rawMessage.message.inputs[0].address === this.session.address // eslint-disable-line
+        this.transaction.type === lunieMessageTypes.SEND_MULTIPLE &&
+        this.transaction.details.from[0] === this.session.address // eslint-disable-line
       ) {
-        const totalAmount = this.transaction.rawMessage.message.inputs[0].coins; // eslint-disable-line
-        const amountInLIKE = []
+        let totalAmount = new BigNumber(0)
+        this.transaction.details.amounts.forEach((a) => {
+          totalAmount = totalAmount.plus(a.amount)
+        })
         const sendAmount = {}
         if (totalAmount) {
-          sendAmount.amount = totalAmount[0].amount / 1e9
-          sendAmount.denom = 'LIKE'
-          amountInLIKE.push(sendAmount)
+          sendAmount.amount = totalAmount
+          sendAmount.denom = this.transaction.details.amounts[0].denom
         }
-        return amountInLIKE
+        return [sendAmount]
 
         // receiveMultiple:
-      } else if (this.transaction.rawMessage.message.inputs) {
-        const targetReceiver = this.transaction.rawMessage.message.outputs.find(
-          (o) => o.address === this.session.address
+      } else if (this.transaction.type === lunieMessageTypes.SEND_MULTIPLE) {
+        const targetReceiverIndex = this.transaction.details.to.findIndex(
+          (o) => o === this.session.address
         )
-        const receivedLIKE = targetReceiver.coins[0].amount
-        const amountInLIKE = []
-        const receiveAmount = {}
-        if (receivedLIKE) {
-          receiveAmount.amount = receivedLIKE / 1e9
-          receiveAmount.denom = 'LIKE'
-          amountInLIKE.push(receiveAmount)
-        }
-        return amountInLIKE
+        const receivedLIKE =
+          this.transaction.details.amounts[targetReceiverIndex]
+        const { amount, denom } = receivedLIKE
+        return [{ amount, denom }]
       }
       return null
     },
