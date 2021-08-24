@@ -30,8 +30,11 @@
               </p>
             </template>
             <template v-if="transactionCaption === `Receive`">
-              <p>
-                {{ receiveSenderAddress }}
+              <p
+                v-for="(address, index) in transaction.details.from"
+                :key="address + index"
+              >
+                {{ address }}
               </p>
             </template>
             <template
@@ -165,13 +168,6 @@ export default {
         return ''
       }
     },
-    receiveSenderAddress() {
-      if (this.transaction.details.to.includes(this.session.address)) {
-        return `from: ${this.transaction.details.from}`
-      } else {
-        return ''
-      }
-    },
     receiveMultipleSenderAddress() {
       if (
         this.transaction.rawMessage.message.outputs.filter(
@@ -244,7 +240,6 @@ export default {
         const targetReceiver = this.transaction.rawMessage.message.outputs.find(
           (o) => o.address === this.session.address
         )
-        console.log('targetReceiver: ', targetReceiver)
         const receivedLIKE = targetReceiver.coins[0].amount
         const amountInLIKE = []
         const receiveAmount = {}
