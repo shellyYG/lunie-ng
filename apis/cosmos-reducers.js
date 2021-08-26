@@ -594,7 +594,7 @@ export function transactionReducer(transaction) {
           // type,
           message,
         },
-        logs: transaction.logs? transaction.logs.map((l) => l.events) : []
+        events: transaction.logs? transaction.logs.map((l) => l.events) : []
       })
     )
     return returnedMessages

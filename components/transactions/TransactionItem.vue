@@ -160,17 +160,17 @@ export default {
         this.transaction.type === lunieMessageTypes.UPDATE_ISCN_RECORD ||
         this.transaction.type === lunieMessageTypes.CHANGE_ISCN_OWNERSHIP
       ) {
-        const findNonEmptyArray = (e) => !!e
-        const nonEmptyLogs = this.transaction.logs.find(findNonEmptyArray)
-        if (!nonEmptyLogs) {
-          return 'Every log is empty'
+        const findISCNIDAttribute = (a) =>
+          a.attributes.find((aa) => aa.key === 'iscn_id')
+        const iscnEvent = this.transaction.events
+          .find((l) => l.find(findISCNIDAttribute))
+          .find(findISCNIDAttribute)
+        if (!iscnEvent) {
+          return 'No ISCN related events found'
         }
-        const findISCNIDAttribute = (a)=>a.attributes.find((aa)=>aa.key==='iscn_id') // eslint-disable-line
-        const iscnIdRecord = nonEmptyLogs.find(findISCNIDAttribute)
-        if (!iscnIdRecord) {
-          return 'No log is related to ISCN'
-        }
-        const iscnId = iscnIdRecord.attributes.find((a)=>a.key==='iscn_id').value // eslint-disable-line
+        const iscnId = iscnEvent.attributes.find(
+          (a) => a.key === 'iscn_id'
+        ).value
         return iscnId
       } else {
         return ''
