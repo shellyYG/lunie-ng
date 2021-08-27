@@ -160,18 +160,20 @@ export default {
         this.transaction.type === lunieMessageTypes.UPDATE_ISCN_RECORD ||
         this.transaction.type === lunieMessageTypes.CHANGE_ISCN_OWNERSHIP
       ) {
-        const findISCNIDAttribute = (a) =>
-          a.attributes.find((aa) => aa.key === 'iscn_id')
-        const iscnEvent = this.transaction.events
-          .find((l) => l.find(findISCNIDAttribute))
-          .find(findISCNIDAttribute)
-        if (!iscnEvent) {
-          return 'No ISCN related events found'
+        let iscnId = ''
+        for (let i = 0; i < this.transaction.events.length; i++) {
+          if (this.transaction.events[i]) {
+            for (let j = 0; j < this.transaction.events[i].length; j++) {
+              for (let k = 0; k < this.transaction.events[i][j].attributes.length; k++) { // eslint-disable-line
+                if (this.transaction.events[i][j].attributes[k].key === 'iscn_id') { // eslint-disable-line
+                  iscnId = this.transaction.events[i][j].attributes[k].value
+                  return iscnId
+                }
+              }
+            }
+          }
         }
-        const iscnId = iscnEvent.attributes.find(
-          (a) => a.key === 'iscn_id'
-        ).value
-        return iscnId
+        return 'Can not find ISCN ID'
       } else {
         return ''
       }
@@ -188,12 +190,11 @@ export default {
       }
     },
     sendMultipleTosCount() {
+      let receiverCount = 0
       if (this.transaction.rawMessage.message.outputs) {
-        const receiverCount = this.transaction.rawMessage.message.outputs.length
-        return `to ${receiverCount} addresses`
-      } else {
-        return `to 0 address`
+        receiverCount = this.transaction.rawMessage.message.outputs.length
       }
+      return `to ${receiverCount} addresses`
     },
     imagePath() {
       try {
@@ -239,7 +240,7 @@ export default {
         })
         const sendAmount = {}
         if (totalAmount) {
-          sendAmount.amount = totalAmount
+          sendAmount.amount = totalAmount.toFixed()
           sendAmount.denom = this.transaction.details.amounts[0].denom
         }
         return [sendAmount]
@@ -251,8 +252,7 @@ export default {
         )
         const receivedLIKE =
           this.transaction.details.amounts[targetReceiverIndex]
-        const { amount, denom } = receivedLIKE
-        return [{ amount, denom }]
+        return [receivedLIKE]
       }
       return null
     },
