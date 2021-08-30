@@ -164,8 +164,8 @@ export default {
         for (let i = 0; i < this.transaction.events.length; i++) {
           if (this.transaction.events[i]) {
             for (let j = 0; j < this.transaction.events[i].length; j++) {
-              for (let k = 0; k < this.transaction.events[i][j].attributes.length; k++) { // eslint-disable-line
-                if (this.transaction.events[i][j].attributes[k].key === 'iscn_id') { // eslint-disable-line
+              for (let k = 0; k < this.transaction.events[i][j].attributes.length; k++) { // eslint-disable-line prettier/prettier
+                if (this.transaction.events[i][j].attributes[k].key === 'iscn_id') { // eslint-disable-line prettier/prettier
                   iscnId = this.transaction.events[i][j].attributes[k].value
                   return iscnId
                 }
@@ -222,7 +222,7 @@ export default {
     amounts() {
       if (
         this.transaction.details.amounts &&
-        this.transaction.type !== lunieMessageTypes.SEND_MULTIPLE) { // eslint-disable-line
+        this.transaction.type !== lunieMessageTypes.SEND_MULTIPLE) { // eslint-disable-line prettier/prettier
         return this.transaction.details.amounts
       } else if (this.transaction.details.amount) {
         return Array.isArray(this.transaction.details.amount)
@@ -232,7 +232,7 @@ export default {
         // sendMultiple:
       } else if (
         this.transaction.type === lunieMessageTypes.SEND_MULTIPLE &&
-        this.transaction.details.from[0] === this.session.address // eslint-disable-line
+        this.transaction.details.from[0] === this.session.address // eslint-disable-line prettier/prettier
       ) {
         let totalAmount = new BigNumber(0)
         this.transaction.details.amounts.forEach((a) => {
