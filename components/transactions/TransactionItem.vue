@@ -163,9 +163,8 @@ export default {
         for (let i = 0; i < this.transaction.events.length; i++) {
           if (this.transaction.events[i]) {
             for (let j = 0; j < this.transaction.events[i].length; j++) {
-              if(this.transaction.events[i][j].attributes.find((a)=> a.key === 'iscn_id')) { // eslint-disable-line prettier/prettier
-                return this.transaction.events[i][j].attributes.find((a)=> a.key === 'iscn_id').value // eslint-disable-line prettier/prettier
-              }
+              const iscnEvent = this.transaction.events[i][j].attributes.find((a)=> a.key === 'iscn_id') // eslint-disable-line prettier/prettier
+              if (iscnEvent) return iscnEvent.value
             }
           }
         }
