@@ -160,15 +160,11 @@ export default {
         this.transaction.type === lunieMessageTypes.UPDATE_ISCN_RECORD ||
         this.transaction.type === lunieMessageTypes.CHANGE_ISCN_OWNERSHIP
       ) {
-        let iscnId = ''
         for (let i = 0; i < this.transaction.events.length; i++) {
           if (this.transaction.events[i]) {
             for (let j = 0; j < this.transaction.events[i].length; j++) {
-              for (let k = 0; k < this.transaction.events[i][j].attributes.length; k++) { // eslint-disable-line prettier/prettier
-                if (this.transaction.events[i][j].attributes[k].key === 'iscn_id') { // eslint-disable-line prettier/prettier
-                  iscnId = this.transaction.events[i][j].attributes[k].value
-                  return iscnId
-                }
+              if(this.transaction.events[i][j].attributes.find((a)=> a.key === 'iscn_id')) { // eslint-disable-line prettier/prettier
+                return this.transaction.events[i][j].attributes.find((a)=> a.key === 'iscn_id').value // eslint-disable-line prettier/prettier
               }
             }
           }
